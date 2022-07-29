@@ -39,9 +39,11 @@ def train(args):
         transforms.CenterCrop(args.image_size),
         transforms.ToTensor(),
         transforms.Lambda(lambda x: x.mul(255)),
-        transforms.RandomRotation(args.degrees)
+        transforms.RandomRotation(args.degrees) ## Including Random Rotation degrees: 0 to 359, 0 - no rotation.
     ])
     train_dataset = datasets.ImageFolder(args.dataset, transform)
+    
+    ## Creating a subset of 100 images from the main dataset. 
     dataset_subset = torch.utils.data.Subset(train_dataset, np.random.choice(len(train_dataset), 100, replace=False))
     train_loader = DataLoader(dataset_subset, batch_size=args.batch_size)
 
@@ -216,7 +218,7 @@ def main():
                                   help="number of images after which the training loss is logged, default is 500")
     train_arg_parser.add_argument("--checkpoint-interval", type=int, default=2000,
                                   help="number of batches after which a checkpoint of the trained model will be created")
-    train_arg_parser.add_argument("--degrees", type=int, default=0, 
+    train_arg_parser.add_argument("--degrees", type=int, default=0, ## Adding the Random Rotation to arg parser to turn 'off' or 'on' Random Rotation. And if 'on' angle of rotation from 0 to 359 degrees.
                                   help="degrees of rotation for Random Rotation 0-359")
 
     eval_arg_parser = subparsers.add_parser("eval", help="parser for evaluation/stylizing arguments")
