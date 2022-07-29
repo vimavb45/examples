@@ -38,10 +38,12 @@ def train(args):
         transforms.Resize(args.image_size),
         transforms.CenterCrop(args.image_size),
         transforms.ToTensor(),
-        transforms.Lambda(lambda x: x.mul(255))
+        transforms.Lambda(lambda x: x.mul(255)),
+        transforms.RandomRotation(args.degrees)
     ])
     train_dataset = datasets.ImageFolder(args.dataset, transform)
-    train_loader = DataLoader(train_dataset, batch_size=args.batch_size)
+    dataset_subset = torch.utils.data.Subset(train_dataset, np.random.choice(len(train_dataset), 100, replace=False))
+    train_loader = DataLoader(dataset_subset, batch_size=args.batch_size)
 
     transformer = TransformerNet().to(device)
     optimizer = Adam(transformer.parameters(), args.lr)
@@ -214,6 +216,8 @@ def main():
                                   help="number of images after which the training loss is logged, default is 500")
     train_arg_parser.add_argument("--checkpoint-interval", type=int, default=2000,
                                   help="number of batches after which a checkpoint of the trained model will be created")
+    train_arg_parser.add_argument("--degrees", type=int, default=0, 
+                                  help="degrees of rotation for Random Rotation 0-359")
 
     eval_arg_parser = subparsers.add_parser("eval", help="parser for evaluation/stylizing arguments")
     eval_arg_parser.add_argument("--content-image", type=str, required=True,
