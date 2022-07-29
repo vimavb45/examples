@@ -39,7 +39,7 @@ def train(args):
         transforms.CenterCrop(args.image_size),
         transforms.ToTensor(),
         transforms.Lambda(lambda x: x.mul(255)),
-        transforms.RandomRotation(args.degrees) ## Including Random Rotation degrees: 0 to 359, 0 - no rotation.
+        transforms.RandomRotation(args.degrees) ## Including Random Rotation degrees: 0 to 359, 0 - no rotation. The range of rotation is (-degrees,+degrees)
     ])
     train_dataset = datasets.ImageFolder(args.dataset, transform)
     
